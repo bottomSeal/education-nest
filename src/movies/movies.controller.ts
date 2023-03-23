@@ -1,11 +1,15 @@
 import { Controller, Get, Post, Delete, Patch } from '@nestjs/common';
 import { Body, Param, Query } from '@nestjs/common/decorators';
+import { Movie } from './entities/movies.entities';
+import { MoviesService } from './movies.service'
 
 @Controller('movies')
 export class MoviesController {
+    constructor(private readonly moviesService:  MoviesService) {}
+
     @Get()
-    getAll() {
-        return 'Здесь будут возвращаться все фильмы.';
+    getAll() : Movie[]{
+        return this.moviesService.getAll();
     }
 
     @Get('search')
@@ -14,14 +18,13 @@ export class MoviesController {
     }
 
     @Get(':id')
-    getOne(@Param('id') id: number) {
-        return `Здесь будет возвращаться один фильм. Его id: ${id}.`;
+    getOne(@Param('id') id: string) : Movie{
+        return this.moviesService.getOne(id);
     }
 
     @Post()
-    create(@Body() moviaData) {
-        console.log(moviaData);
-        return moviaData;
+    create(@Body() movieData) {
+        return this.moviesService.create(movieData);
     }
 
     @Delete()
@@ -30,15 +33,12 @@ export class MoviesController {
     }
 
     @Delete(':id')
-    deleteOne(@Param('id') id: number) {
-        return `Эта функция удаляет один фильм с id: ${id}.`;
+    deleteOne(@Param('id') id: string) {
+        return this.moviesService.remove(id);
     }
 
     @Patch(':id')
-    patch(@Param('id') id: number, @Body() updateData) {
-        return {
-            movieId: id,
-            ...updateData
-        };
+    patch(@Param('id') id: string, @Body() updateData) {
+        return this.moviesService.patch(id, updateData);
     }
 }
